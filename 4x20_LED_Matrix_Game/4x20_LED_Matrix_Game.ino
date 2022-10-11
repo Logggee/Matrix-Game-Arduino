@@ -46,6 +46,9 @@ byte player[]
 byte counter_byte1 = -3;
 byte counter_byte2 = -2;
 byte counter_byte3 = -1;
+byte displayByte1;
+byte displayByte2;
+byte displayByte3;
 
 void setup() 
 {
@@ -60,20 +63,9 @@ void setup()
 
 void loop() 
 {
-  /*Display(block[counter_byte1], block[counter_byte2], block[counter_byte3], 200);
-  counter_byte1 += 3;
-  counter_byte2 += 3;
-  counter_byte3 += 3;
-  if(counter_byte3 == 65)
+  if(digitalRead(BUTTON) == LOW)                                                                        //Display of player jump
   {
-    counter_byte1 = 0;
-    counter_byte2 = 1;
-    counter_byte3 = 2;
-  }*/
-  if(digitalRead(BUTTON) == LOW)
-  {
-    Serial.println("Test");
-    for(byte i=0; i<7; i++)
+    for(byte i=0; i<8; i++)
     {
       counter_byte1 += 3;
       counter_byte2 += 3;
@@ -87,6 +79,26 @@ void loop()
         counter_byte2 = -2;
         counter_byte3 = -1;
       } 
+    }
+  }
+
+  else                                                                                                  //Display of the block
+  {
+    counter_byte1 += 3;
+    counter_byte2 += 3;
+    counter_byte3 += 3;
+
+    displayByte1 = block[counter_byte1] | 0x70;
+    displayByte2 = block[counter_byte2] | 0x00;
+    displayByte3 = block[counter_byte3] | 0x08;
+    
+    Display(displayByte1, displayByte2, displayByte3, 200);
+
+    if(counter_byte3 == 65)
+    {
+      counter_byte1 = -3;
+      counter_byte2 = -2;
+      counter_byte3 = -1;
     }
   }
 }
