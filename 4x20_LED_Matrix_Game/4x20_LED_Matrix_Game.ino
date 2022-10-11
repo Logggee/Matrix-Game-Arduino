@@ -88,11 +88,11 @@ void loop()
     counter_byte2 += 3;
     counter_byte3 += 3;
 
-    displayByte1 = block[counter_byte1] | 0x70;
-    displayByte2 = block[counter_byte2] | 0x00;
-    displayByte3 = block[counter_byte3] | 0x08;
-    
-    Display(displayByte1, displayByte2, displayByte3, 200);
+    for(byte i=0; i<100; i++)
+    {
+      Display(player[0], player[1], player[2], 1);
+      Display(block[counter_byte1], block[counter_byte2], block[counter_byte3], 1);
+    }
 
     if(counter_byte3 == 65)
     {
