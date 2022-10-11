@@ -1,9 +1,9 @@
 #define LATCH 9
 #define CLOCK 10
 #define DATA 8
-#define SERCLK 3
-#define OE 2
-#define BUTTON 4
+#define SERCLK 4
+#define OE 3
+#define BUTTON 2
 
 byte block[]
 {
@@ -59,6 +59,7 @@ void setup()
   pinMode(OE, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
   Serial.begin(9600);
+  attachInterrupt(digitalPinToInterrupt(BUTTON), jump, CHANGE);
 }
 
 void loop() 
@@ -117,4 +118,9 @@ void Display(byte byte1, byte byte2, byte byte3, int displayTime)
   digitalWrite(SERCLK,LOW);
   digitalWrite(LATCH,LOW);
   digitalWrite(LATCH,HIGH);
+}
+
+void jump()
+{
+  
 }
