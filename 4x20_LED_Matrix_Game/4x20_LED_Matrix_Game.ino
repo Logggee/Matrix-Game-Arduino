@@ -88,6 +88,13 @@ void loop()
       blockCounter_byte1 += 3;
       blockCounter_byte2 += 3;
       blockCounter_byte3 += 3;
+
+      if(blockCounter_byte3 >= 65)
+      {
+        blockCounter_byte1 = 0;
+        blockCounter_byte2 = 1;
+        blockCounter_byte3 = 2;
+      }
     }
 
     playerCounter_byte1 = -3;
