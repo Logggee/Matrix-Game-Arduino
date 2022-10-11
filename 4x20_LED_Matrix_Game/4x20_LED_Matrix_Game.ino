@@ -43,12 +43,16 @@ byte player[]
   0x70, 0x00, 0x08,
 };
 
-byte counter_byte1 = -3;
-byte counter_byte2 = -2;
-byte counter_byte3 = -1;
-byte displayByte1;
-byte displayByte2;
-byte displayByte3;
+byte blockCounter_byte1 = -3;
+byte blockCounter_byte2 = -2;
+byte blockCounter_byte3 = -1;
+byte playerCounter_byte1 = -3;
+byte playerCounter_byte2 = -2;
+byte playerCounter_byte3 = -1;
+bool jumpFlag = 0;
+
+void Display(byte byte1, byte byte2, byte byte3, int displayTime);
+void jump(volatile int count);
 
 void setup() 
 {
@@ -59,48 +63,51 @@ void setup()
   pinMode(OE, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(BUTTON), jump, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(BUTTON), jump, FALLING);
 }
 
 void loop() 
 {
-  if(digitalRead(BUTTON) == LOW)                                                                        //Display of player jump
+  blockCounter_byte1 += 3;
+  blockCounter_byte2 += 3;
+  blockCounter_byte3 += 3;
+
+  if(jumpFlag == 1)
   {
-    for(byte i=0; i<8; i++)
+    for(byte e=0; e<=7; e++)
     {
-      counter_byte1 += 3;
-      counter_byte2 += 3;
-      counter_byte3 += 3;
-
-      Display(player[counter_byte1], player[counter_byte2], player[counter_byte3], 200);
-
-      if(counter_byte1 == 18)
+      Serial.println(e);
+      playerCounter_byte1 += 3;
+      playerCounter_byte2 += 3;
+      playerCounter_byte3 += 3;
+      for(byte i=0; i<100; i++)
       {
-        counter_byte1 = -3;
-        counter_byte2 = -2;
-        counter_byte3 = -1;
-      } 
+        Display(player[playerCounter_byte1], player[playerCounter_byte2], player[playerCounter_byte3], 1);
+        Display(block[blockCounter_byte1], block[blockCounter_byte2], block[blockCounter_byte3], 1);
+      }
+      blockCounter_byte1 += 3;
+      blockCounter_byte2 += 3;
+      blockCounter_byte3 += 3;
     }
+
+    playerCounter_byte1 = -3;
+    playerCounter_byte2 = -2;
+    playerCounter_byte3 = -1;
+    jumpFlag = 0;    
+    interrupts();
   }
 
-  else                                                                                                  //Display of the block
+  for(byte i=0; i<=100; i++)
   {
-    counter_byte1 += 3;
-    counter_byte2 += 3;
-    counter_byte3 += 3;
+    Display(player[0], player[1], player[2], 1);
+    Display(block[blockCounter_byte1], block[blockCounter_byte2], block[blockCounter_byte3], 1);
+  }
 
-    for(byte i=0; i<100; i++)
-    {
-      Display(player[0], player[1], player[2], 1);
-      Display(block[counter_byte1], block[counter_byte2], block[counter_byte3], 1);
-    }
-
-    if(counter_byte3 == 65)
-    {
-      counter_byte1 = -3;
-      counter_byte2 = -2;
-      counter_byte3 = -1;
-    }
+  if(blockCounter_byte3 >= 65)
+  {
+    blockCounter_byte1 = -3;
+    blockCounter_byte2 = -2;
+    blockCounter_byte3 = -1;
   }
 }
 
@@ -122,5 +129,7 @@ void Display(byte byte1, byte byte2, byte byte3, int displayTime)
 
 void jump()
 {
-  
+  noInterrupts();
+  jumpFlag = 1;
+  Serial.println("test");
 }
