@@ -30,9 +30,21 @@ byte block[]
   0x30, 0x00, 0x00,
 };
 
-byte counter_byte1 = 0;
-byte counter_byte2 = 1;
-byte counter_byte3 = 2;
+byte player[]
+{
+  0x70, 0x00, 0x08,
+  0xB0, 0x00, 0x08,
+  0xD0, 0x00, 0x08,
+  0xE0, 0x00, 0x08,
+  0xE0, 0x00, 0x08,
+  0xD0, 0x00, 0x08,
+  0xB0, 0x00, 0x08,
+  0x70, 0x00, 0x08,
+};
+
+byte counter_byte1 = -3;
+byte counter_byte2 = -2;
+byte counter_byte3 = -1;
 
 void setup() 
 {
@@ -46,7 +58,7 @@ void setup()
 
 void loop() 
 {
-  Display(block[counter_byte1], block[counter_byte2], block[counter_byte3], 1000);
+  /*Display(block[counter_byte1], block[counter_byte2], block[counter_byte3], 200);
   counter_byte1 += 3;
   counter_byte2 += 3;
   counter_byte3 += 3;
@@ -55,7 +67,21 @@ void loop()
     counter_byte1 = 0;
     counter_byte2 = 1;
     counter_byte3 = 2;
-  }
+  }*/
+  
+  counter_byte1 += 3;
+  counter_byte2 += 3;
+  counter_byte3 += 3;
+
+  Display(player[counter_byte1], player[counter_byte2], player[counter_byte3], 200);
+
+  if(counter_byte1 == 18)
+  {
+    counter_byte1 = -3;
+    counter_byte2 = -2;
+    counter_byte3 = -1;
+  } 
+
 }
 
 void Display(byte byte1, byte byte2, byte byte3, int displayTime)
