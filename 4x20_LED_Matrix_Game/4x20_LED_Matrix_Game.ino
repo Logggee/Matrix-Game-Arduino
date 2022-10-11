@@ -3,6 +3,7 @@
 #define DATA 8
 #define SERCLK 3
 #define OE 2
+#define BUTTON 4
 
 byte block[]
 {
@@ -48,11 +49,12 @@ byte counter_byte3 = -1;
 
 void setup() 
 {
-  pinMode(LATCH,OUTPUT);
-  pinMode(CLOCK,OUTPUT);
-  pinMode(DATA,OUTPUT);
-  pinMode(SERCLK,OUTPUT);
-  pinMode(OE,OUTPUT);
+  pinMode(LATCH, OUTPUT);
+  pinMode(CLOCK, OUTPUT);
+  pinMode(DATA, OUTPUT);
+  pinMode(SERCLK, OUTPUT);
+  pinMode(OE, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
   Serial.begin(9600);
 }
 
@@ -68,20 +70,25 @@ void loop()
     counter_byte2 = 1;
     counter_byte3 = 2;
   }*/
-  
-  counter_byte1 += 3;
-  counter_byte2 += 3;
-  counter_byte3 += 3;
-
-  Display(player[counter_byte1], player[counter_byte2], player[counter_byte3], 200);
-
-  if(counter_byte1 == 18)
+  if(digitalRead(BUTTON) == LOW)
   {
-    counter_byte1 = -3;
-    counter_byte2 = -2;
-    counter_byte3 = -1;
-  } 
+    Serial.println("Test");
+    for(byte i=0; i<7; i++)
+    {
+      counter_byte1 += 3;
+      counter_byte2 += 3;
+      counter_byte3 += 3;
 
+      Display(player[counter_byte1], player[counter_byte2], player[counter_byte3], 200);
+
+      if(counter_byte1 == 18)
+      {
+        counter_byte1 = -3;
+        counter_byte2 = -2;
+        counter_byte3 = -1;
+      } 
+    }
+  }
 }
 
 void Display(byte byte1, byte byte2, byte byte3, int displayTime)
