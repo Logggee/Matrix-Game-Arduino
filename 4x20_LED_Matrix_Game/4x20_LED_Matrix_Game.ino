@@ -63,7 +63,8 @@ void setup()
   pinMode(OE, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
   Serial.begin(9600);
-  attachInterrupt(digitalPinToInterrupt(BUTTON), jump, FALLING);
+  attachInterrupt(digitalPinToInterrupt(BUTTON), Jump, FALLING);
+  Homescreen();
 }
 
 void loop() 
@@ -133,8 +134,27 @@ void Display(byte byte1, byte byte2, byte byte3, int displayTime)
   digitalWrite(LATCH,HIGH);
 }
 
-void jump()
+void Jump()
 {
   noInterrupts();
   jumpFlag = 1;
+}
+
+void Homescreen()
+{
+  noInterrupts();
+  while(digitalRead(BUTTON) == HIGH)
+  {
+    for(int i=0; i<=500; i++)
+    {
+      Display(player[0], player[1], player[2], 1);
+      Display(block[3], block[4], block[5], 1);
+    }
+
+    for(int i=0; i<=1000; i++)
+    {
+      Display(0xF0, 0x00, 0x00, 1);
+    }
+  }
+  interrupts();
 }
