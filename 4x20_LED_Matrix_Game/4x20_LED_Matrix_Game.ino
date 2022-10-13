@@ -76,7 +76,6 @@ void loop()
   {
     for(byte e=0; e<=7; e++)
     {
-      Serial.println(e);
       playerCounter_byte1 += 3;
       playerCounter_byte2 += 3;
       playerCounter_byte3 += 3;
@@ -138,5 +137,4 @@ void jump()
 {
   noInterrupts();
   jumpFlag = 1;
-  Serial.println("test");
 }
