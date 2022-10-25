@@ -5,7 +5,7 @@
 #define OE 3
 #define BUTTON 2
 
-byte block[]
+byte block[]                //bytes um einen 2x2 Block von Rechts nach Links laufen zu lassen
 {
   0x38, 0x00, 0x00,
   0x3C, 0x00, 0x00,
@@ -31,7 +31,7 @@ byte block[]
   0x30, 0x00, 0x00,
 };
 
-byte player[]
+byte player[]            //bytes um den player Punkt sprung Ablauf
 {
   0x70, 0x00, 0x08,
   0xB0, 0x00, 0x08,
@@ -43,18 +43,21 @@ byte player[]
   0x70, 0x00, 0x08,
 };
 
-byte blockCounter_byte1 = -3;
+byte blockCounter_byte1 = -3;         //Counter fur die drei Schieberegister, da in der Funktion nicht inkrementiert werden kann
 byte blockCounter_byte2 = -2;
 byte blockCounter_byte3 = -1;
 byte playerCounter_byte1 = -3;
 byte playerCounter_byte2 = -2;
 byte playerCounter_byte3 = -1;
-bool jumpFlag = 0;
+bool jumpFlag = 0;                   //Jump Flag das in der ISR gesetzt wird
 
-void Display(byte byte1, byte byte2, byte byte3, int displayTime);
-void jump(volatile int count);
+//Prototypen der Funktionen
+void Display(byte byte1, byte byte2, byte byte3, int displayTime);     //Schiebt drei bytes in die Schieberegister
+void jump(volatile int count);                                         //ISR
+void Homescreen();                                                     //Bei Spielbeginn blinkt die Anzeige und das Programm läuft nicht los
+void ChrashDetaction(byte blockCounter);                               //Chrash Detection falls kein Sprung ausgelöst wurde
 
-void setup() 
+void setup()                                                           //Setup aller Pins und Interrupt und ausführung von Homescreen
 {
   pinMode(LATCH, OUTPUT);
   pinMode(CLOCK, OUTPUT);
@@ -69,11 +72,11 @@ void setup()
 
 void loop() 
 {
-  blockCounter_byte1 += 3;
+  blockCounter_byte1 += 3;     
   blockCounter_byte2 += 3;
   blockCounter_byte3 += 3;
 
-  if(jumpFlag == 1)
+  if(jumpFlag == 1)                   //Wenn Interrupt ausgeführt wurde wird der Jump ablauf ausgeführt
   {
     for(byte e=0; e<=7; e++)
     {
@@ -110,51 +113,12 @@ void loop()
     Display(block[blockCounter_byte1], block[blockCounter_byte2], block[blockCounter_byte3], 1);
   }
 
+  ChrashDetection(blockCounter_byte3);
+
   if(blockCounter_byte3 >= 65)
   {
     blockCounter_byte1 = -3;
     blockCounter_byte2 = -2;
     blockCounter_byte3 = -1;
   }
-}
-
-void Display(byte byte1, byte byte2, byte byte3, int displayTime)
-{
-  digitalWrite(SERCLK,HIGH);
-  digitalWrite(OE,HIGH);
-  digitalWrite(LATCH,LOW);
-  shiftOut(DATA,CLOCK,MSBFIRST,byte1);
-  shiftOut(DATA,CLOCK,MSBFIRST,byte2);
-  shiftOut(DATA,CLOCK,MSBFIRST,byte3);
-  digitalWrite(LATCH,HIGH);
-  digitalWrite(OE,LOW);
-  delay(displayTime);
-  digitalWrite(SERCLK,LOW);
-  digitalWrite(LATCH,LOW);
-  digitalWrite(LATCH,HIGH);
-}
-
-void Jump()
-{
-  noInterrupts();
-  jumpFlag = 1;
-}
-
-void Homescreen()
-{
-  noInterrupts();
-  while(digitalRead(BUTTON) == HIGH)
-  {
-    for(int i=0; i<=500; i++)
-    {
-      Display(player[0], player[1], player[2], 1);
-      Display(block[3], block[4], block[5], 1);
-    }
-
-    for(int i=0; i<=1000; i++)
-    {
-      Display(0xF0, 0x00, 0x00, 1);
-    }
-  }
-  interrupts();
 }
