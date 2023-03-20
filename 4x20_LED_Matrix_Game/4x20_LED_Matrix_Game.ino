@@ -50,14 +50,16 @@ byte playerCounter_byte1 = -3;
 byte playerCounter_byte2 = -2;
 byte playerCounter_byte3 = -1;
 bool jumpFlag = 0;                   //Jump Flag das in der ISR gesetzt wird
+bool crash = false;
 
 //Prototypen der Funktionen
-void Display(byte byte1, byte byte2, byte byte3, int displayTime);     //Schiebt drei bytes in die Schieberegister
-void jump(volatile int count);                                         //ISR
-void Homescreen();                                                     //Bei Spielbeginn blinkt die Anzeige und das Programm läuft nicht los
-void ChrashDetaction(byte blockCounter);                               //Chrash Detection falls kein Sprung ausgelöst wurde
+void Display(byte byte1, byte byte2, byte byte3, int displayTime);                                                                      //Schiebt drei bytes in die Schieberegister
+void jump(volatile int count);                                                                                                          //ISR
+void Homescreen();                                                                                                                      //Bei Spielbeginn blinkt die Anzeige und das Programm läuft nicht los
+void CrashDetaction(byte blockCounter);                                                                                                //Chrash Detection falls kein Sprung ausgelöst wurde
+bool CrashDetection(byte playerCounter_byte3, byte blockCounter_byte3, byte playerCounter_byte1, byte blockCounter_byte1);
 
-void setup()                                                           //Setup aller Pins und Interrupt und ausführung von Homescreen
+void setup()                                                                                                                            //Setup aller Pins und Interrupt und ausführung von Homescreen
 {
   pinMode(LATCH, OUTPUT);
   pinMode(CLOCK, OUTPUT);
@@ -80,6 +82,13 @@ void loop()
   {
     for(byte e=0; e<=7; e++)
     {
+      if(crash == true)
+      {
+        crash = false;
+        break;
+        break;
+      }
+
       playerCounter_byte1 += 3;
       playerCounter_byte2 += 3;
       playerCounter_byte3 += 3;
@@ -88,6 +97,7 @@ void loop()
         Display(player[playerCounter_byte1], player[playerCounter_byte2], player[playerCounter_byte3], 1);
         Display(block[blockCounter_byte1], block[blockCounter_byte2], block[blockCounter_byte3], 1);
       }
+      crash = CrashDetection(playerCounter_byte3, blockCounter_byte3, playerCounter_byte1, blockCounter_byte1);
       blockCounter_byte1 += 3;
       blockCounter_byte2 += 3;
       blockCounter_byte3 += 3;
@@ -114,7 +124,6 @@ void loop()
   }
 
   ChrashDetection(blockCounter_byte3);
-
   if(blockCounter_byte3 >= 65)
   {
     blockCounter_byte1 = -3;

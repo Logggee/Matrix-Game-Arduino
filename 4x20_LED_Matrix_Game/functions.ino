@@ -1,4 +1,4 @@
-void Display(byte byte1, byte byte2, byte byte3, int displayTime)
+void Display(byte byte1, byte byte2, byte byte3, int displayTime)               //Funktion um drei bytes in die Schieberegister zu schieben
 {
   digitalWrite(SERCLK,HIGH);
   digitalWrite(OE,HIGH);
@@ -14,13 +14,13 @@ void Display(byte byte1, byte byte2, byte byte3, int displayTime)
   digitalWrite(LATCH,HIGH);
 }
 
-void Jump()
+void Jump()                 //ISR
 {
   noInterrupts();
   jumpFlag = 1;
 }
 
-void Homescreen()
+void Homescreen()                                        //Blinckender Startbildschirm
 {
   noInterrupts();
   while(digitalRead(BUTTON) == HIGH)
@@ -46,4 +46,18 @@ void ChrashDetection(byte blockCounter)                                        /
     Homescreen();
     blockCounter_byte3 = 65;
   }
+}
+
+bool CrashDetection(byte player_Counter_byte3, byte block_Counter_byte3, byte player_Counter_byte1, byte block_Counter_byte1)   //Crash detection wenn ein Sprung ausgelöst wurde
+{
+  if(bitRead(player[player_Counter_byte3], 3) == 1 && bitRead(block[block_Counter_byte3], 3) == 1)   //Kontrolle ob ein Block in der gleichen Zeile befindet wie der palyer
+  {
+    if(player[player_Counter_byte1] == 0x70 || player[player_Counter_byte1] == 0xB0)     //Die Beiden möglichkeiten eines Crashes während einer Sprunganimation
+    {
+      Homescreen();
+      blockCounter_byte3 = 65;           //Globale Variable wird geändert
+      return true;                       //retur true wenn ein Crash aufgetreten ist
+    }
+  }
+  return false;                          //return false falls kein crash detectet wurde
 }
